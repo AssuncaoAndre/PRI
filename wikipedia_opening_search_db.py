@@ -1,14 +1,25 @@
+from os import execlp
 import wikipedia
 import json
 import csv
 import time
 from wikipedia.exceptions import DisambiguationError, PageError, WikipediaException
 
+import sqlite3
 
-openings_file=open('opening_name_to_wikipedia.txt', 'w')
-openings_file.write("original_name, wikipedia_title\n")
-opening_to_summary=open('opening_to_summary.txt', 'w')
+con = sqlite3.connect('database.db')
+cur = con.cursor()
+
 dict={}
+
+dict_wikipedia={}
+for row in cur.execute('SELECT * from original_to_wiki'):
+    print(row)
+    dict[row[0]]=row[1]
+
+for row in cur.execute('SELECT * from wiki_to_summ'):
+    print(row)
+    dict_wikipedia[row[0]]='yes'
 
 # opening the CSV file
 with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
@@ -18,13 +29,16 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
  
   # displaying the contents of the CSV file
   for row in reader:
+        
         flag = 0
         original_name=row['Opening']
+        if original_name in dict:
+                continue
         if(row['Opening'].find(':')!=-1):
                 row['Opening']=row['Opening'][:row['Opening'].find(':')]
         if(row['Opening'] in dict):
                 continue
-        """ row['Opening']=row['Opening'].replace(':','') """
+
         print (row['Opening'])
         row['Opening']=row['Opening'].replace(';','')
         row['Opening']=row['Opening'].replace('-',' ')
@@ -86,16 +100,17 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
         title=wikipedia.page(row['Opening']).title
         print(title)
         print("\n") 
-        openings_file=open('opening_name_to_wikipedia.txt', 'a')
-        opening_to_summary=open('opening_to_summary.txt', 'a')
-        dict[original_name] = title
-        
-        struct2={"wikipedia_title": title, "summary":summ}
-        openings_file.write(original_name+", "+title+"\n")
 
-        opening_to_summary.write(title+", "+summ+"\n")
-        openings_file.close()
-        opening_to_summary.close()
+        if original_name not in dict:
+                dict[original_name] = title
+                cur.execute("insert into original_to_wiki values (?, ?)", (original_name, title)) 
+        
+        if title not in dict_wikipedia:
+                dict_wikipedia[title]='yes'
+                cur.execute("insert into wiki_to_summ values (?, ?)", (title, summ))
+
+con.commit()
+con.close()
         
 
 
