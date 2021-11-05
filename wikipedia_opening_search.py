@@ -6,6 +6,7 @@ from wikipedia.exceptions import DisambiguationError, PageError, WikipediaExcept
 
 
 openings_file=open('opening_name_to_wikipedia.txt', 'w')
+openings_file.write("original_name, wikipedia_title\n")
 opening_to_summary=open('opening_to_summary.txt', 'w')
 dict={}
 
@@ -88,10 +89,11 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
         openings_file=open('opening_name_to_wikipedia.txt', 'a')
         opening_to_summary=open('opening_to_summary.txt', 'a')
         dict[original_name] = title
-        struct={"original name": original_name, "wikipedia_title": title}
+        
         struct2={"wikipedia_title": title, "summary":summ}
-        openings_file.write(json.dumps(struct)+",\n")
-        opening_to_summary.write(json.dumps(struct2)+",\n")
+        openings_file.write(original_name+", "+title+"\n")
+
+        opening_to_summary.write(title+", "+summ+"\n")
         openings_file.close()
         opening_to_summary.close()
         
