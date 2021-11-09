@@ -1,9 +1,27 @@
-Create Table original_to_wiki (
+DROP TABLE IF Exists original_name;
+DROP TABLE IF EXISTS wiki_to_summ;
+DROP TABLE IF EXISTS games;
+
+create table original_to_wiki (
 original_name text UNIQUE,
 wiki_name text
 );
 
-Create Table wiki_to_summ (
+create table wiki_to_summ (
 wiki_name text UNIQUE,
 summ text
+);
+
+create table games (
+
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    game_link VARCHAR(255) NOT NULL,
+    white VARCHAR(32) NOT NULL DEFAULT 'Unknown',
+    black VARCHAR(32) NOT NULL DEFAULT 'Unknown',
+    white_elo INTEGER NOT NULL,
+    black_elo INTEGER NOT NULL,
+    opening VARCHAR(255) NOT NULL DEFAULT 'Undetermined',
+    eco VARCHAR(8),
+    PRIMARY KEY(id)
+
 );

@@ -7,31 +7,32 @@
 path := data1
 
 
-games := masters recreational
+games := masters.csv recreational.csv
 
 #URLs to get data from
 
-YEAR := 2020
 
-BASE_URL := "https://database.nikonoel.fr/lichess_elite_$(YEAR)"
 
-masters1_URL := $(BASE_URL)-10.zip
+BASE_URL := "https://database.nikonoel.fr/lichess_elite_2020"
+
+masters1_URL := $(BASE_URL)-08.zip
 masters2_URL := $(BASE_URL)-09.zip
-masters3_URL := $(BASE_URL)-08.zip
+masters3_URL := $(BASE_URL)-10.zip
+
+BASE_PGN := "lichess_elite_2020"
+
+masters1_PGN := $(BASE_PGN)-08.pgn
+masters2_PGN := $(BASE_PGN)-09.pgn
+masters3_PGN := $(BASE_PGN)-10.pgn
 
 recreational_URL := "https://database.lichess.org/standard/lichess_db_standard_rated_2014-01.pgn.bz2"
 
 
 all: $(games)
-	echo "Obtained all games: $(games)"
-
-
-install:
+	
+requirements:
 	sudo apt install npm
 	
-
-recreational: recreational.csv
-	echo "Extracted recreational data to recreational.csv"
 
 recreational.csv: recreational.txt
 	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/recreational.csv
@@ -49,8 +50,7 @@ games.bz2: $(path)
 	curl -L -o $(path)/games.bz2 $(recreational_URL)
 
 masters: masters.csv
-	echo "Extracted masters data to masters.csv"
-
+	
 masters.csv: masters.txt
 	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/masters.csv
 	sed -r -e 's/\[LichessURL (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/masters.txt > $(path)/masters1.txt
@@ -59,16 +59,14 @@ masters.csv: masters.txt
 
 
 masters.txt: mastersFetch
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/lichess_elite_2020-08.pgn > $(path)/masters.txt
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/lichess_elite_2020-09.pgn >> $(path)/masters.txt
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/lichess_elite_2020-10.pgn >> $(path)/masters.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/masters.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/masters.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters3_PGN) >> $(path)/masters.txt
 
 mastersFetch: masters1.zip masters2.zip masters3.zip
 	unzip $(path)/masters1 -d $(path)
 	unzip $(path)/masters2 -d $(path)
 	unzip $(path)/masters3 -d $(path)
-
-	echo "Downloaded and unziped master files"
 
 masters1.zip: $(path)
 	curl -L -o $(path)/masters1.zip $(masters1_URL)
@@ -82,13 +80,14 @@ masters3.zip: $(path)
 	
 $(path):
 	mkdir $(path)
-	echo "Created '$(path)' folder"
+	
 
 
 clean:
-	rm -f *.zip
-	rm -f *.pgn
-	rm -f *.bz2
-	rm -f *.txt
+	rm -f ./$(path)/*.zip
+	rm -f ./$(path)/*.pgn
+	rm -f ./$(path)/*.bz2
+	rm -f ./$(path)/*.txt
+	rm -f ./$(path)/games
 
 # EOF
