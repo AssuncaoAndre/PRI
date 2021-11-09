@@ -11,8 +11,6 @@ games := masters.csv recreational.csv
 
 #URLs to get data from
 
-
-
 BASE_URL := "https://database.nikonoel.fr/lichess_elite_2020"
 
 masters1_URL := $(BASE_URL)-08.zip

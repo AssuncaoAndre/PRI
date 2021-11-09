@@ -18,6 +18,7 @@ create table games (
     game_link VARCHAR(255) NOT NULL,
     white VARCHAR(32) NOT NULL DEFAULT 'Unknown',
     black VARCHAR(32) NOT NULL DEFAULT 'Unknown',
+    result INTEGER NOT NULL,
     white_elo INTEGER NOT NULL,
     black_elo INTEGER NOT NULL,
     opening VARCHAR(255) NOT NULL DEFAULT 'Undetermined',
