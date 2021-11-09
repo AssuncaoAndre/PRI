@@ -73,7 +73,7 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
                         
                            
                 except PageError:
-                        print("fuck3")
+                        
                         
                         if(defense==0 and summ.find("defence")==-1 and summ.find("Defence")==-1):
                                 row['Opening']=row['Opening'].replace("Defence","Defense")
@@ -83,7 +83,7 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
                                 row['Opening']=row['Opening'][:row['Opening'].rfind(" ")]
                                 defense=0
                 except DisambiguationError as error:
-                        print("fuck2")
+                      
 
                         print(error.options)
                         row['Opening']=error.options[0]+" "+error.options[0]
@@ -91,10 +91,10 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
                         
 
                 except wikipedia.HTTPTimeoutError:
-                        print("fuck1")
+                        
                         time.sleep(1) 
                 except:
-                        print("fuck50")
+                        print("")
 
                         
         title=wikipedia.page(row['Opening']).title
