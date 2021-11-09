@@ -38,7 +38,7 @@ recreational.csv: recreational.txt
 	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/recreational.csv
 	sed -r -e 's/\[Site (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/recreational.txt > $(path)/recreational1.txt
 	tr "\n" " " < $(path)/recreational1.txt >>  $(path)/recreational2.txt
-	sed -e 's/;/,/g' -e 's/~/\n/g' $(path)/recreational2.txt >> $(path)/recreational.csv	
+	sed -e 's/;/,/g' -e 's/~/\n/g' -e 's/Refused/Declined/g' -e 's/1-0/0/g' -e 's/0-1/2/g' -e 's/1\/2-1\/2/1/g' $(path)/recreational2.txt >> $(path)/recreational.csv	
 
 recreational.txt: recreationalFetch
 	grep -E '\[Site "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/games > $(path)/recreational.txt
@@ -55,7 +55,7 @@ masters.csv: masters.txt
 	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/masters.csv
 	sed -r -e 's/\[LichessURL (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/masters.txt > $(path)/masters1.txt
 	tr "\n" " " < $(path)/masters1.txt >>  $(path)/masters2.txt
-	sed -e 's/;/,/g' -e 's/~/\n/g' $(path)/masters2.txt >> $(path)/masters.csv	
+	sed -e 's/;/,/g' -e 's/~/\n/g' -e 's/Refused/Declined/g' -e 's/1-0/0/g' -e 's/0-1/2/g' -e 's/1\/2-1\/2/1/g' $(path)/masters2.txt >> $(path)/masters.csv	
 
 
 masters.txt: mastersFetch
