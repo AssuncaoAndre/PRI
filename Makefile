@@ -28,11 +28,8 @@ recreational_URL := "https://database.lichess.org/standard/lichess_db_standard_r
 
 all: $(games)
 	
-requirements:
-	sudo apt install npm
-	
 
-recreational.csv: recreational.txt
+	recreational.csv: recreational.txt
 	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/recreational.csv
 	sed -r -e 's/\[Site (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/recreational.txt > $(path)/recreational1.txt
 	tr "\n" " " < $(path)/recreational1.txt >>  $(path)/recreational2.txt
