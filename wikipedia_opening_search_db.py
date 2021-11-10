@@ -14,16 +14,13 @@ dict={}
 
 dict_wikipedia={}
 for row in cur.execute('SELECT * from original_to_wiki'):
-    print(row)
     dict[row[0]]=row[1]
+    dict_wikipedia[row[1]]='yes'
 
-for row in cur.execute('SELECT * from wiki_to_summ'):
-    print(row)
-    dict_wikipedia[row[0]]='yes'
 
 # opening the CSV file
 with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
-   
+#with open('data1/recreational.csv', "r")as file:
   # reading the CSV file
   reader=csv.DictReader(file)
  
@@ -31,16 +28,20 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
   for row in reader:
         
         flag = 0
+        if(row['Opening'].find(':')!=-1):
+                row['Opening']=row['Opening'][:row['Opening'].find(':')]
+        if(row['Opening'].find(';')!=-1):
+                row['Opening']=row['Opening'][:row['Opening'].find(';')]
+        if(row['Opening'].find('#')!=-1):
+                row['Opening']=row['Opening'][:row['Opening'].find('#')]
+        
         original_name=row['Opening']
         if original_name in dict:
                 continue
-        if(row['Opening'].find(':')!=-1):
-                row['Opening']=row['Opening'][:row['Opening'].find(':')]
         if(row['Opening'] in dict):
                 continue
 
         print (row['Opening'])
-        row['Opening']=row['Opening'].replace(';','')
         row['Opening']=row['Opening'].replace('-',' ')
         print("----------"+original_name+"----------")
         exceptions=0
@@ -103,12 +104,8 @@ with open('data/organized/lichess_data_organized_medium.csv', "r")as file:
 
         if original_name not in dict:
                 dict[original_name] = title
-                cur.execute("insert into original_to_wiki values (?, ?)", (original_name, title)) 
+                cur.execute("insert into original_to_wiki values (?, ?, ?)", (original_name, title, summ)) 
         
-        if title not in dict_wikipedia:
-                dict_wikipedia[title]='yes'
-                cur.execute("insert into wiki_to_summ values (?, ?)", (title, summ))
-
 con.commit()
 con.close()
         
