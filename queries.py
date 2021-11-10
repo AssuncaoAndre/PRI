@@ -1,18 +1,31 @@
 import sys
+import sqlite3
+
+
 
 def total_games():
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
     return 0
 
 def win_distribuition():
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
     return 0
 
 def elo_distribuition():
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
     return 0
 
 def opening_distribuition():
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
     return 0
 
 def win_distr_popular_openings():
+    con = sqlite3.connect('database.db')
+    cur = con.cursor()
     return 0
 
 
