@@ -33,7 +33,7 @@ all: $(pipes)
 	python3 openings_to_database.py $(path)/openings.csv #load opening information to the database
 
 openings.csv:
-	
+	python3 wiki_opening_scrap.py $(path) #Script that gets the openings in wikipedia and puts them in a file called openings.csv
 
 recreational.csv: recreational.txt
 	
