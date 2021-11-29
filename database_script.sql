@@ -1,13 +1,26 @@
-DROP TABLE IF Exists original_to_wiki;
-DROP TABLE IF EXISTS wiki_to_summ;
 DROP TABLE IF EXISTS games;
+DROP TABLE IF EXISTS players;
+DROP TABLE IF EXISTS openings;
 
-create table original_to_wiki (
-original_name text UNIQUE,
-wiki_name text,
-summ text
+create table players (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    irl_name VARCHAR(32),
+    online_name VARCHAR(32),
+    title VARCHAR(16) NOT NULL,
+    bio text
+
 );
 
+create table openings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    op_name text NOT NULL,
+    code varchar(3) NOT NULL,
+    pgn_moves text NOT NULL,
+    op_description text,
+    is_mainline INTEGER DEFAULT 0
+
+);
 
 create table games (
 

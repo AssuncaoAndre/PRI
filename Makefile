@@ -28,12 +28,26 @@ recreational_URL := "https://database.lichess.org/standard/lichess_db_standard_r
 
 all: $(pipes)
 	python3 build_db.py #Script that creates the relational schema in the database
+	games
+	openings
+	players
+
+games:
 	python3 game_to_database.py $(path)/recreational.csv #load recreational games to the database
 	python3 game_to_database.py $(path)/masters.csv #load master games to the database
-	python3 openings_to_database.py $(path)/openings.csv #load opening information to the database
 
-openings.csv:
-	python3 wiki_opening_scrap.py $(path) #Script that gets the openings in wikipedia and puts them in a file called openings.csv
+openings:
+	python openings_to_database.py ./$(path)/openings/a.tsv
+	python openings_to_database.py ./$(path)/openings/b.tsv
+	python openings_to_database.py ./$(path)/openings/c.tsv
+	python openings_to_database.py ./$(path)/openings/d.tsv
+	python openings_to_database.py ./$(path)/openings/e.tsv
+	python opening_descriptions.py
+
+players:
+	python3 processGMs.py ./data/titles.txt
+	python3 getGM_wiki.py
+
 
 recreational.csv: recreational.txt
 	
@@ -66,16 +80,23 @@ masters: masters.csv
 	
 masters.csv: masters.txt
 	#the same as recreational.csv
-	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/masters.csv
-	sed -r -e 's/\[LichessURL (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/masters.txt > $(path)/masters1.txt
+	
+	echo "gameID,White,Black,Result,WhiteElo,BlackElo,ECO,Opening" > $(path)/masters.csv
+	sed -r -e 's/\[LichessURL (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g' -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/masters.txt > $(path)/masters1.txt
 	tr "\n" " " < $(path)/masters1.txt >>  $(path)/masters2.txt
 	sed -e 's/;/,/g' -e 's/~/\n/g' -e 's/Refused/Declined/g' -e 's/1-0/0/g' -e 's/0-1/2/g' -e 's/1\/2-1\/2/1/g' $(path)/masters2.txt >> $(path)/masters.csv	
 
 
 masters.txt: mastersFetch
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/masters.txt
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/masters.txt
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters3_PGN) >> $(path)/masters.txt
+	
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/masters.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/masters.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters3_PGN) >> $(path)/masters.txt
+
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[WhiteTitle "(.*?)"\]|\[BlackTitle "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/titles.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[WhiteTitle "(.*?)"\]|\[BlackTitle "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/titles.txt
+	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[WhiteTitle "(.*?)"\]|\[BlackTitle "(.*?)"\]' $(path)/$(masters3_PGN) >> $(path)/titles.txt
+
 
 mastersFetch: masters1.zip masters2.zip masters3.zip
 	unzip $(path)/masters1 -d $(path)
