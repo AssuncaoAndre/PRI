@@ -6,9 +6,6 @@
 
 path := data
 
-
-pipes := masters.csv recreational.csv openings.csv
-
 #URLs to get data from
 
 BASE_URL := "https://database.nikonoel.fr/lichess_elite_2020"
@@ -26,23 +23,23 @@ masters3_PGN := $(BASE_PGN)-10.pgn
 recreational_URL := "https://database.lichess.org/standard/lichess_db_standard_rated_2014-01.pgn.bz2"
 
 
-all: $(pipes)
+all: 
 	python3 build_db.py #Script that creates the relational schema in the database
-	games
-	openings
-	players
+	make games
+	make openings
+	make players
 
-games:
+games: recreational.csv masters.csv
 	python3 game_to_database.py $(path)/recreational.csv #load recreational games to the database
 	python3 game_to_database.py $(path)/masters.csv #load master games to the database
 
 openings:
-	python openings_to_database.py ./$(path)/openings/a.tsv
-	python openings_to_database.py ./$(path)/openings/b.tsv
-	python openings_to_database.py ./$(path)/openings/c.tsv
-	python openings_to_database.py ./$(path)/openings/d.tsv
-	python openings_to_database.py ./$(path)/openings/e.tsv
-	python opening_descriptions.py
+	python3 openings_to_database.py ./$(path)/openings/a.tsv
+	python3 openings_to_database.py ./$(path)/openings/b.tsv
+	python3 openings_to_database.py ./$(path)/openings/c.tsv
+	python3 openings_to_database.py ./$(path)/openings/d.tsv
+	python3 openings_to_database.py ./$(path)/openings/e.tsv
+	python3 opening_descriptions.py
 
 players:
 	python3 processGMs.py ./data/titles.txt
@@ -52,7 +49,7 @@ players:
 recreational.csv: recreational.txt
 	
 	#create csv file and add its headers
-	echo "gameID, White, Black, Result, WhiteElo, BlackElo, ECO, Opening" > $(path)/recreational.csv
+	echo "gameID,White,Black,Result,WhiteElo,BlackElo,ECO,Opening" > $(path)/recreational.csv
 	
 	#data processing - this is used to capture from the text files the exact information needed. Also separate each column with ; and each row with ~
 	sed -r -e 's/\[Site (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/recreational.txt > $(path)/recreational1.txt
@@ -62,7 +59,8 @@ recreational.csv: recreational.txt
 	
 	#convert information to comma separated values - execute some data processing -
 	# substitute Refused with Declined - replace 1-0 for 0, replace 0-1 with 2 and 1/2-1/2 with 1 (WhiteWin-0, BlackWin-2,Draw-1)
-	sed -e 's/;/,/g' -e 's/~/\n/g' -e 's/Refused/Declined/g' -e 's/1-0/0/g' -e 's/0-1/2/g' -e 's/1\/2-1\/2/1/g' $(path)/recreational2.txt >> $(path)/recreational.csv	
+	sed -e 's/;/,/g' -e 's/~/\n/g' -e 's/Refused/Declined/g' -e 's/1-0/0/g' -e 's/0-1/2/g' -e 's/1\/2-1\/2/1/g' $(path)/recreational2.txt >> $(path)/recreational.csv
+	
 
 recreational.txt: recreationalFetch
 	#regular expression to filter relevant information from the PGN (portable game notation) file
