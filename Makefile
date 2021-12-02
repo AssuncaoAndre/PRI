@@ -49,10 +49,10 @@ players:
 recreational.csv: recreational.txt
 	
 	#create csv file and add its headers
-	echo "gameID,White,Black,Result,WhiteElo,BlackElo,ECO,Opening" > $(path)/recreational.csv
+	echo "White,Black,Result,WhiteElo,BlackElo,ECO,Opening" > $(path)/recreational.csv
 	
 	#data processing - this is used to capture from the text files the exact information needed. Also separate each column with ; and each row with ~
-	sed -r -e 's/\[Site (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g'  -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/recreational.txt > $(path)/recreational1.txt
+	sed -r -e 's/\[White "(.*?)"\]/\1;/g' -e 's/\[Black "(.*?)"\]/\1;/g' -e 's/\[Result "(.*?)"\]/\1;/g'  -e 's/\[WhiteElo "(.*?)"\]/\1;/g'  -e 's/\[BlackElo "(.*?)"\]/\1;/g'  -e 's/\[ECO "(.*?)"\]/\1;/g' -e 's/\[Opening "(.*?)"\]/\1~\n/g' $(path)/recreational.txt > $(path)/recreational1.txt
 	
 	#remove all newlines from the file
 	tr "\n" " " < $(path)/recreational1.txt >>  $(path)/recreational2.txt
@@ -64,7 +64,7 @@ recreational.csv: recreational.txt
 
 recreational.txt: recreationalFetch
 	#regular expression to filter relevant information from the PGN (portable game notation) file
-	grep -E '\[Site "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/games > $(path)/recreational.txt
+	grep -E '\[White "(.*?)"\]|\[Black "(.*?)"]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/games > $(path)/recreational.txt
 
 recreationalFetch: games.bz2
 	#extract the downloaded file
@@ -79,17 +79,17 @@ masters: masters.csv
 masters.csv: masters.txt
 	#the same as recreational.csv
 	
-	echo "gameID,White,Black,Result,WhiteElo,BlackElo,ECO,Opening" > $(path)/masters.csv
-	sed -r -e 's/\[LichessURL (.*?)\]/\1;/g' -e 's/\[White (.*?)\]/\1;/g' -e 's/\[Black (.*?)\]/\1;/g' -e 's/\[Result (.*?)\]/\1;/g' -e 's/\[WhiteElo (.*?)\]/\1;/g'  -e 's/\[BlackElo (.*?)\]/\1;/g'  -e 's/\[ECO (.*?)\]/\1;/g' -e 's/\[Opening (.*?)\]/\1~\n/g' $(path)/masters.txt > $(path)/masters1.txt
+	echo "White,Black,Result,WhiteElo,BlackElo,ECO,Opening" > $(path)/masters.csv
+	sed -r -e 's/\[White "(.*?)"\]/\1;/g' -e 's/\[Black "(.*?)"\]/\1;/g' -e 's/\[Result "(.*?)"\]/\1;/g' -e 's/\[WhiteElo "(.*?)"\]/\1;/g'  -e 's/\[BlackElo "(.*?)"\]/\1;/g'  -e 's/\[ECO "(.*?)"\]/\1;/g' -e 's/\[Opening "(.*?)"\]/\1~\n/g' $(path)/masters.txt > $(path)/masters1.txt
 	tr "\n" " " < $(path)/masters1.txt >>  $(path)/masters2.txt
 	sed -e 's/;/,/g' -e 's/~/\n/g' -e 's/Refused/Declined/g' -e 's/1-0/0/g' -e 's/0-1/2/g' -e 's/1\/2-1\/2/1/g' $(path)/masters2.txt >> $(path)/masters.csv	
 
 
 masters.txt: mastersFetch
 	
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/masters.txt
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/masters.txt
-	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters3_PGN) >> $(path)/masters.txt
+	grep -E '\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/masters.txt
+	grep -E '\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/masters.txt
+	grep -E '\[White "(.*?)"\]|\[Black "(.*?)"\]|\[Result "(.*?)"\]|\[WhiteElo "(.*?)"\]|\[BlackElo "(.*?)"\]|\[ECO "(.*?)"\]|\[Opening "(.*?)"\]' $(path)/$(masters3_PGN) >> $(path)/masters.txt
 
 	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[WhiteTitle "(.*?)"\]|\[BlackTitle "(.*?)"\]' $(path)/$(masters1_PGN) > $(path)/titles.txt
 	grep -E '\[LichessURL "(.*?)"]|\[White "(.*?)"\]|\[Black "(.*?)"\]|\[WhiteTitle "(.*?)"\]|\[BlackTitle "(.*?)"\]' $(path)/$(masters2_PGN) >> $(path)/titles.txt
@@ -124,5 +124,6 @@ clean:
 	rm -f ./$(path)/*.txt
 	rm -f ./$(path)/*.csv
 	rm -f ./$(path)/games
+	rm -f ./gms.txt
 
 # EOF

@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS openings;
 
 create table players (
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    player_id INTEGER PRIMARY KEY AUTOINCREMENT,
     irl_name VARCHAR(32),
     online_name VARCHAR(32),
     title VARCHAR(16) NOT NULL,
@@ -13,7 +13,7 @@ create table players (
 );
 
 create table openings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    opening_id INTEGER PRIMARY KEY AUTOINCREMENT,
     op_name text NOT NULL,
     code varchar(3) NOT NULL,
     pgn_moves text NOT NULL,
@@ -24,8 +24,7 @@ create table openings (
 
 create table games (
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    game_link VARCHAR(255) NOT NULL,
+    game_id INTEGER PRIMARY KEY AUTOINCREMENT,
     white VARCHAR(32) NOT NULL DEFAULT 'Unknown',
     black VARCHAR(32) NOT NULL DEFAULT 'Unknown',
     result INTEGER NOT NULL,

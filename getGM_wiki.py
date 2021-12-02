@@ -25,6 +25,8 @@ with open("gms.txt", encoding='utf-8', errors='ignore') as gms_file:
 
         try:
             
+            print("Looking for GM " + name)
+
             #player_bio = wikipedia.summary(name)
             page = wikipedia.page(name)
             

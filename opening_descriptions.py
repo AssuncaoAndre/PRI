@@ -5,6 +5,44 @@ from wikipedia.exceptions import DisambiguationError, PageError, WikipediaExcept
 
 import sqlite3
 
+
+def solvePageError(key):
+    
+    search_query = key
+    
+    if("Queen's Indian Defense" in key):
+        search_query = "Queen s Indian Defence"
+
+    else:
+        if("Defense" in key):
+            print("Replacing Key Defense to Defence")
+            search_query = key.replace("Defense","Defence")
+        if("'" in key):
+            search_query = key.replace("'","")
+            print("Removing ' from key")
+
+    try:
+        time.sleep(0.1)
+
+        print("SPE: Looking for " + search_query)
+        
+        page = wikipedia.page(search_query)
+        categories = page.categories
+
+        if "Chess openings" in categories:
+            
+            print("SPE: Obtained Page for " + search_query)
+            
+            summ = page.summary
+            dict[key] = summ
+        else:
+            dict[key] = "Undefined Description"
+    except:
+        dict[key] = "Undefined Description"
+        print("Unknown Error for " + key + "Opening ")  
+
+
+
 con = sqlite3.connect('database.db')
 cur = con.cursor()
 
@@ -13,8 +51,6 @@ sidelines = 0
 for row in cur.execute('SELECT op_name from openings'):
 
     opening = row[0]
-
-    
 
     if opening not in dict:
 
@@ -53,12 +89,11 @@ for key in dict:
             if "Chess openings" in categories:
                summ = page.summary
                dict[key] = summ
-            
+            else:
+                dict[key] = "Undefined Description"
             
         except PageError:
-            
-            dict[key] = "Undefined Description"
-            print("Page Error for " + key + "Opening ")              
+            solvePageError(key)
         except DisambiguationError as error:
             dict[key] = "Undefined Description"
             print("Disambiguation Error for " + key + "Opening ")        
